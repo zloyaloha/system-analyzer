@@ -34,7 +34,7 @@ std::map<std::string, CPUMetric::CpuData, CpuNameComparator> CPUMetric::readCpuD
             iss >> label >> data.user >> data.nice >> data.system >> data.idle >> data.iowait >> data.irq >> data.softirq >> data.steal;
 
             if (checkCoreIsNeeded(label)) {
-                cpu_data[label] = data;
+                cpu_data[label] = std::move(data);
             }
 
         }
@@ -48,7 +48,6 @@ std::string CPUMetric::calculateCpuUsage()
     std::stringstream ss;
 
     for (const auto& [core_name, data]: prev_val) {
-        if (curr_val.find(core_name) == curr_val.end()) continue;
         double usage = calculateCoreUsage(curr_val.at(core_name), data);
         ss << core_name << ": " << usage << "%   ";
     }

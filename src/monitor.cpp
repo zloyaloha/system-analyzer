@@ -1,6 +1,6 @@
 #include "monitor.h"
 
-Monitor::Monitor() : interval(500)
+Monitor::Monitor() : interval(25)
 {
     metrics.push_back(std::make_unique<CPUMetric>(std::initializer_list<int>{-1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11}));
     outputers.push_back(std::make_unique<ConsoleOutputer>(std::cout));
