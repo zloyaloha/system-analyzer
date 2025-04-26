@@ -24,6 +24,8 @@ struct ConfigData {
     std::vector<std::string> getMemorySpecs() const;
     std::string getLogPath() const;
     bool isConsoleNeeded() const;
+    bool isCpuNeed() const;
+    bool isRamNeed() const;
 };
 
 class IConfig {

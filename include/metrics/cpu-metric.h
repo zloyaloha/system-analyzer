@@ -31,6 +31,7 @@ struct CpuNameComparator {
 class CPUMetric: public IMetric {
 public:
     CPUMetric(const std::initializer_list<int> &ids);
+    CPUMetric(const std::vector<int>& cores);
     std::string getName() const override;
     std::unordered_map<std::string, std::string> calculateMetric() override;
 private:

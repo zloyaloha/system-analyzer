@@ -75,3 +75,13 @@ bool ConfigData::isConsoleNeeded() const {
     }
     return false;
 }
+
+bool ConfigData::isCpuNeed() const
+{
+    return std::find_if(metrics.begin(), metrics.end(), [](const MetricConfig& m) { return m.type == "cpu"; }) != metrics.end();
+}
+
+bool ConfigData::isRamNeed() const
+{
+    return std::find_if(metrics.begin(), metrics.end(), [](const MetricConfig& m) { return m.type == "memory"; }) != metrics.end();
+}

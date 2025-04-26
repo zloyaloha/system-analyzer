@@ -2,6 +2,7 @@
 #include "cpu-metric.h"
 #include "ram-metric.h"
 #include "output.h"
+#include "parser.h"
 #include <chrono>
 #include <thread>
 #include <mutex>
@@ -9,7 +10,9 @@
 
 class Monitor {
 public:
-    Monitor();
+    Monitor() = default;
+    Monitor(const std::string &pathToConfig);
+    Monitor(const ConfigData &config);
     ~Monitor();
     void run();
     void stop();

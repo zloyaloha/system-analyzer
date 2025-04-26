@@ -7,6 +7,11 @@ CPUMetric::CPUMetric(const std::initializer_list<int>& ids) : needed_cores(ids)
     curr_val = readCpuData();
 }
 
+CPUMetric::CPUMetric(const std::vector<int> &cores) : needed_cores(cores.begin(), cores.end())
+{
+    curr_val = readCpuData();
+}
+
 std::string CPUMetric::getName() const
 {
     return "CPU";

@@ -1,6 +1,8 @@
 #include "ram-metric.h"
 
-RAMMetric::RAMMetric(const std::initializer_list<std::string> needed_stats) : stats(needed_stats) {}
+RAMMetric::RAMMetric(const std::initializer_list<std::string> stats) : needed_stats(stats) {}
+
+RAMMetric::RAMMetric(const std::vector<std::string> &specs) : needed_stats(specs.begin(), specs.end()) {}
 
 std::string RAMMetric::getName() const
 {
@@ -15,7 +17,7 @@ std::unordered_map<std::string, std::string> RAMMetric::calculateMetric()
     std::ifstream file("/proc/meminfo");
     while (std::getline(file, line)) {
         label = extractLabel(line);
-        if (stats.count(label) > 0) {
+        if (needed_stats.count(label) > 0) {
             stat2value[label] = extractStatistic(line);
         }
     }

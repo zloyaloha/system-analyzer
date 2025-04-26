@@ -6,10 +6,11 @@
 class RAMMetric : public IMetric {
 public:
     RAMMetric(const std::initializer_list<std::string> needed_stats);
+    RAMMetric(const std::vector<std::string>& specs);
     std::string getName() const override;
     std::unordered_map<std::string, std::string> calculateMetric() override;
 private:
-    std::unordered_set<std::string> stats;
+    std::unordered_set<std::string> needed_stats;
     std::unordered_map<std::string, uint64_t> name2stat;
 private:
     static std::string extractLabel(const std::string& label);

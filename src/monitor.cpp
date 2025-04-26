@@ -1,11 +1,57 @@
 #include "monitor.h"
 
-Monitor::Monitor() : interval(500)
+Monitor::Monitor(const std::string &pathToConfig)
 {
-    metrics.push_back(std::make_unique<CPUMetric>(std::initializer_list<int>{-1, 9, 10, 11}));
-    metrics.push_back(std::make_unique<RAMMetric>(std::initializer_list<std::string>{"MemTotal", "MemFree", "MemAvailable"}));
-    outputers.push_back(std::make_unique<ConsoleOutputer>(std::cout));
-    // outputers.push_back(std::make_unique<FileOutputer>("/home/zloyaloha/programming/random_practice/system-analyzer/log"));
+    try {
+        std::unique_ptr<IConfig> parser = std::make_unique<JsonConfig>();
+        auto config = parser->parseConfig(pathToConfig);
+        if (config.isCpuNeed()) {
+            std::unique_ptr<IMetric> cpu_metric = std::make_unique<CPUMetric>(config.getCpuIds());
+            metrics.push_back(std::move(cpu_metric));
+        }
+        if (config.isRamNeed()) {
+            std::unique_ptr<IMetric> ram_metric = std::make_unique<RAMMetric>(config.getMemorySpecs());
+            metrics.push_back(std::move(ram_metric));
+        }
+        if (config.isConsoleNeeded()) {
+            std::unique_ptr<IOutputer> console_outputer = std::make_unique<ConsoleOutputer>(std::cout);
+            outputers.push_back(std::move(console_outputer));
+        }
+        std::string log_path = config.getLogPath();
+        if (!log_path.empty()) {
+            std::unique_ptr<IOutputer> file_outputer = std::make_unique<FileOutputer>(config.getLogPath());
+            outputers.push_back(std::move(file_outputer));
+        }
+        interval = std::chrono::milliseconds(config.period);
+    } catch (std::exception& e) {
+        std::cout << "Error " << e.what();
+    }
+}
+
+Monitor::Monitor(const ConfigData& config)
+{
+    if (config.isCpuNeed()) {
+        std::unique_ptr<IMetric> cpu_metric = std::make_unique<CPUMetric>(config.getCpuIds());
+        metrics.push_back(std::move(cpu_metric));
+    }
+
+    if (config.isRamNeed()) {
+        std::unique_ptr<IMetric> ram_metric = std::make_unique<RAMMetric>(config.getMemorySpecs());
+        metrics.push_back(std::move(ram_metric));
+    }
+
+    if (config.isConsoleNeeded()) {
+        std::unique_ptr<IOutputer> console_outputer = std::make_unique<ConsoleOutputer>(std::cout);
+        outputers.push_back(std::move(console_outputer));
+    }
+
+    std::string log_path = config.getLogPath();
+
+    if (!log_path.empty()) {
+        std::unique_ptr<IOutputer> file_outputer = std::make_unique<FileOutputer>(config.getLogPath());
+        outputers.push_back(std::move(file_outputer));
+    }
+    interval = std::chrono::milliseconds(config.period);
 }
 
 Monitor::~Monitor()
