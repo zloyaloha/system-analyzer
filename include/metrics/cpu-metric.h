@@ -1,19 +1,14 @@
 #pragma once
+#include "metric.h"
 #include <string>
 #include <vector>
 #include <fstream>
 #include <iostream>
 #include <sstream>
 #include <unordered_set>
+#include <unordered_map>
 #include <map>
 #include <memory>
-
-class IMetric {
-    public:
-    virtual std::string getName() = 0;
-    virtual std::string calculateMetric() = 0;
-    virtual ~IMetric() = default;
-};
 
 struct CpuNameComparator {
     bool operator()(const std::string& a, const std::string& b) const {
@@ -36,8 +31,8 @@ struct CpuNameComparator {
 class CPUMetric: public IMetric {
 public:
     CPUMetric(const std::initializer_list<int> &ids);
-    std::string getName() override;
-    std::string calculateMetric() override;
+    std::string getName() const override;
+    std::unordered_map<std::string, std::string> calculateMetric() override;
 private:
     struct CpuData {
         unsigned long user;
@@ -53,14 +48,10 @@ private:
     std::map<std::string, CpuData, CpuNameComparator> curr_val;
     std::map<std::string, CpuData, CpuNameComparator> prev_val;
 
-    std::map<std::string, CpuData, CpuNameComparator> readCpuData();
-    std::string calculateCpuUsage();
-    double calculateCoreUsage(const CpuData &curr_data, const CpuData &prev_data);
-
     std::unordered_set<int> needed_cores;
-
-    int iter;
-private:
+    private:
     bool checkCoreIsNeeded(const std::string coreNumber);
+    std::map<std::string, CpuData, CpuNameComparator> readCpuData();
+    std::unordered_map<std::string, std::string> calculateCpuUsage();
+    std::string calculateCoreUsage(const CpuData &curr_data, const CpuData &prev_data);
 };
-

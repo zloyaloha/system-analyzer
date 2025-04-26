@@ -1,4 +1,4 @@
-#include "metrics.h"
+#include "cpu-metric.h"
 
 using ull = unsigned long long;
 
@@ -7,12 +7,12 @@ CPUMetric::CPUMetric(const std::initializer_list<int>& ids) : needed_cores(ids)
     curr_val = readCpuData();
 }
 
-std::string CPUMetric::getName()
+std::string CPUMetric::getName() const
 {
     return "CPU";
 }
 
-std::string CPUMetric::calculateMetric()
+std::unordered_map<std::string, std::string> CPUMetric::calculateMetric()
 {
     prev_val = curr_val;
     curr_val = readCpuData();
@@ -21,7 +21,6 @@ std::string CPUMetric::calculateMetric()
 
 std::map<std::string, CPUMetric::CpuData, CpuNameComparator> CPUMetric::readCpuData()
 {
-    ++iter;
     std::ifstream file("/proc/stat");
     std::string line;
     std::map<std::string, CPUMetric::CpuData, CpuNameComparator> cpu_data;
@@ -39,23 +38,21 @@ std::map<std::string, CPUMetric::CpuData, CpuNameComparator> CPUMetric::readCpuD
 
         }
     }
-
     return cpu_data;
 }
 
-std::string CPUMetric::calculateCpuUsage()
+std::unordered_map<std::string, std::string> CPUMetric::calculateCpuUsage()
 {
     std::stringstream ss;
-
+    std::unordered_map<std::string, std::string> core2stat;
     for (const auto& [core_name, data]: prev_val) {
-        double usage = calculateCoreUsage(curr_val.at(core_name), data);
-        ss << core_name << ": " << usage << "%   ";
+        core2stat[core_name] = calculateCoreUsage(curr_val.at(core_name), data);
     }
-    return ss.str();
+    return core2stat;
 }
 
 
-double CPUMetric::calculateCoreUsage(const CpuData& curr_data, const CpuData& prev_data)
+std::string CPUMetric::calculateCoreUsage(const CpuData& curr_data, const CpuData& prev_data)
 {
     const ull Ud = curr_data.user - prev_data.user;
     const ull Nd = curr_data.nice - prev_data.nice;
@@ -72,7 +69,7 @@ double CPUMetric::calculateCoreUsage(const CpuData& curr_data, const CpuData& pr
 
     if (total == 0) return 0;
 
-    return 100.0 * static_cast<double>(b) / total;
+    return std::to_string(100.0 * static_cast<double>(b) / total) + "%";
 }
 
 bool CPUMetric::checkCoreIsNeeded(const std::string coreLabel)

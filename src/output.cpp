@@ -2,11 +2,13 @@
 
 ConsoleOutputer::ConsoleOutputer(std::ostream &os = std::cout) : stream(os) {}
 
-void ConsoleOutputer::setMetric(const std::string &name, const std::string &value)
+void ConsoleOutputer::setMetric(const std::string &name, const std::unordered_map<std::string, std::string>& stat2value)
 {
-    if (value != "") {
-        stream << name << '\n' << value << '\n';
+    stream << name << '\n';
+    for (const auto& [stat_name, value]: stat2value) {
+        stream << stat_name << ": " << value << "   ";
     }
+    stream << "\n\n";
 }
 
 FileOutputer::FileOutputer(const std::string &file_path) : stream(file_path)
@@ -16,11 +18,13 @@ FileOutputer::FileOutputer(const std::string &file_path) : stream(file_path)
     }
 }
 
-void FileOutputer::setMetric(const std::string &name, const std::string &value)
+void FileOutputer::setMetric(const std::string &name, const std::unordered_map<std::string, std::string>& stat2value)
 {
-    if (value != "") {
-        stream << name << '\n' << value << '\n';
+    stream << name << '\n';
+    for (const auto& [stat_name, value]: stat2value) {
+        stream << stat_name << ": " << value << "   ";
     }
+    stream << "\n\n";
 }
 
 FileOutputer::~FileOutputer()
