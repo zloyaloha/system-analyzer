@@ -24,7 +24,7 @@ std::unordered_map<std::string, std::string> CPUMetric::calculateMetric()
     return calculateCpuUsage();
 }
 
-std::map<std::string, CPUMetric::CpuData, CpuNameComparator> CPUMetric::readCpuData()
+std::map<std::string, CPUMetric::CpuData, CpuNameComparator> CPUMetric::readCpuData() const
 {
     std::ifstream file("/proc/stat");
     std::string line;
@@ -46,7 +46,7 @@ std::map<std::string, CPUMetric::CpuData, CpuNameComparator> CPUMetric::readCpuD
     return cpu_data;
 }
 
-std::unordered_map<std::string, std::string> CPUMetric::calculateCpuUsage()
+std::unordered_map<std::string, std::string> CPUMetric::calculateCpuUsage() const
 {
     std::stringstream ss;
     std::unordered_map<std::string, std::string> core2stat;
@@ -57,7 +57,7 @@ std::unordered_map<std::string, std::string> CPUMetric::calculateCpuUsage()
 }
 
 
-std::string CPUMetric::calculateCoreUsage(const CpuData& curr_data, const CpuData& prev_data)
+std::string CPUMetric::calculateCoreUsage(const CpuData& curr_data, const CpuData& prev_data) const
 {
     const ull Ud = curr_data.user - prev_data.user;
     const ull Nd = curr_data.nice - prev_data.nice;
@@ -77,7 +77,7 @@ std::string CPUMetric::calculateCoreUsage(const CpuData& curr_data, const CpuDat
     return std::to_string(100.0 * static_cast<double>(b) / total) + "%";
 }
 
-bool CPUMetric::checkCoreIsNeeded(const std::string coreLabel)
+bool CPUMetric::checkCoreIsNeeded(const std::string coreLabel) const
 {
     if (coreLabel == "cpu") {
         return needed_cores.count(-1) > 0;

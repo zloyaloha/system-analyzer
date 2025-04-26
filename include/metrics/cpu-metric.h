@@ -51,8 +51,8 @@ private:
 
     std::unordered_set<int> needed_cores;
     private:
-    bool checkCoreIsNeeded(const std::string coreNumber);
-    std::map<std::string, CpuData, CpuNameComparator> readCpuData();
-    std::unordered_map<std::string, std::string> calculateCpuUsage();
-    std::string calculateCoreUsage(const CpuData &curr_data, const CpuData &prev_data);
+    bool checkCoreIsNeeded(const std::string coreNumber) const;
+    std::map<std::string, CpuData, CpuNameComparator> readCpuData() const;
+    std::unordered_map<std::string, std::string> calculateCpuUsage() const;
+    std::string calculateCoreUsage(const CpuData &curr_data, const CpuData &prev_data) const;
 };
